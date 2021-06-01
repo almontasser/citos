@@ -1,0 +1,12 @@
+# CIT Operating System
+
+## Needed Software
+
+* WSL2
+* QEMU
+* sudo apt install build-essential mtools grub-common xorriso grub-pc-bin -y
+
+# Run OS
+
+`make run`
+

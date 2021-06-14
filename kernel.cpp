@@ -14,7 +14,8 @@ extern "C" void call_constructors()
 
 void clear_screen()
 {
-  unsigned short *video_memory = (unsigned short *)0xB8000;
+  uint16_t *video_memory = (uint16_t *)0xB8000;
+
   for (int y = 0; y < 25; y++)
   {
     for (int x = 0; x < 80; x++)
@@ -27,18 +28,43 @@ void clear_screen()
 
 void printf(char *str)
 {
-  unsigned short *video_memory = (unsigned short *)0xB8000;
+  uint16_t *video_memory = (uint16_t *)0xB8000;
+
+  static uint8_t x = 0, y = 0;
 
   for (int i = 0; str[i] != '\0'; i++)
   {
-    video_memory[i] = (video_memory[i] & 0xFF00) | str[i];
+    if (x >= 80)
+    {
+      x = 0;
+      y++;
+    }
+
+    if (y >= 25)
+    {
+      x = 0;
+      y = 0;
+      clear_screen();
+    }
+
+    switch (str[i])
+    {
+    case '\n':
+      x = 0;
+      y++;
+      break;
+    default:
+      video_memory[y * 80 + x] = (video_memory[i] & 0xFF00) | str[i];
+      x++;
+    }
   }
 }
 
 extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number)
 {
   clear_screen();
-  printf("CIT Operating System\0");
+  printf("CIT Operating System\n");
+  printf("CIT Operating System\n");
 
   GlobalDescriptorTable gdt;
 

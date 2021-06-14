@@ -1,3 +1,6 @@
+#include "types.h"
+#include "gdt.h"
+
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
 extern "C" constructor end_ctors;
@@ -36,6 +39,8 @@ extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number
 {
   clear_screen();
   printf("CIT Operating System\0");
+
+  GlobalDescriptorTable gdt;
 
   while (1)
   {

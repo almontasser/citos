@@ -1,10 +1,11 @@
 #include "types.h"
 #include "gdt.h"
+#include "interrupts.h"
 
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
 extern "C" constructor end_ctors;
-extern "C" void call_constructors()
+extern "C" void callConstructors()
 {
   for (constructor *i = &start_ctors; i != &end_ctors; i++)
   {
@@ -64,9 +65,11 @@ extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number
 {
   clear_screen();
   printf("CIT Operating System\n");
-  printf("CIT Operating System\n");
 
   GlobalDescriptorTable gdt;
+  InterruptManager interrupts(&gdt);
+
+  interrupts.Activate();
 
   while (1)
   {

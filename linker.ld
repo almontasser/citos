@@ -4,8 +4,7 @@ OUTPUT_ARCH(i386:i386)
 
 SECTIONS
 {
-
-  . = 0x0100000;
+  . = 0x00100000;
 
   .text :
   {
@@ -31,7 +30,7 @@ SECTIONS
 
   /DISCARD/ :
   {
-    *(.finit_array)
+    *(.fini_array)
     *(.comment)
   }
 }

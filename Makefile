@@ -2,7 +2,7 @@ GPP_PARAMS = -m32 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-exce
 AS_PARAMS = --32
 LD_PARAMS = -melf_i386
 
-objects = loader.o gdt.o port.o kernel.o
+objects = loader.o gdt.o port.o interruptstubs.o interrupts.o kernel.o
 
 %.o: %.cpp
 	g++ $(GPP_PARAMS) -o $@ -c $<

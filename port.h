@@ -20,7 +20,7 @@ public:
 	virtual uint8_t Read();
 };
 
-class Port8BitSlow : public Port
+class Port8BitSlow : public Port8Bit
 {
 public:
 	Port8BitSlow(uint16_t portnumber);

@@ -1,7 +1,7 @@
 #include "gdt.h"
 
 GlobalDescriptorTable::GlobalDescriptorTable() : nullSegmentSelector(0, 0, 0),
-                                                 //unusedSegmentSelector(0, 0, 0),
+                                                 unusedSegmentSelector(0, 0, 0),
                                                  codeSegmentSelector(0, 64 * 1024 * 1024, 0x9A),
                                                  dataSegmentSelector(0, 64 * 1024 * 1024, 0x92)
 {

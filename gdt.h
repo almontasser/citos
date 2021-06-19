@@ -24,7 +24,7 @@ public:
   } __attribute__((packed));
 
   SegmentDescriptor nullSegmentSelector;
-  //SegmentDescriptor unusedSegmentSelector;
+  SegmentDescriptor unusedSegmentSelector;
   SegmentDescriptor codeSegmentSelector;
   SegmentDescriptor dataSegmentSelector;
 

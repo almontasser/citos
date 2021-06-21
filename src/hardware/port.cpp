@@ -1,5 +1,6 @@
-#include "port.h"
+#include <hardware/port.h>
 
+using namespace citos::hardware;
 Port::Port(uint16_t portnumber)
 {
   this->portnumber = portnumber;

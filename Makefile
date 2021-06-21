@@ -1,13 +1,23 @@
-GPP_PARAMS = -m32 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-exceptions -fno-leading-underscore -Wno-write-strings
+GPP_PARAMS = -m32 -Iinclude -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-exceptions -fno-leading-underscore -Wno-write-strings
 AS_PARAMS = --32
 LD_PARAMS = -melf_i386
 
-objects = loader.o gdt.o driver.o port.o interruptstubs.o interrupts.o keyboard.o mouse.o kernel.o
+objects = obj/loader.o \
+					obj/gdt.o \
+					obj/drivers/driver.o \
+					obj/hardware/port.o \
+					obj/hardware/interruptstubs.o \
+					obj/hardware/interrupts.o \
+					obj/drivers/keyboard.o \
+					obj/drivers/mouse.o \
+					obj/kernel.o
 
-%.o: %.cpp
+obj/%.o: src/%.cpp
+	mkdir -p $(@D)
 	g++ $(GPP_PARAMS) -o $@ -c $<
 
-%.o: %.s
+obj/%.o: src/%.s
+	mkdir -p $(@D)
 	as $(AS_PARAMS) -o $@ $<
 
 kernel.bin: linker.ld $(objects)
@@ -35,4 +45,4 @@ run: kernel.iso
 
 .PHONY: clean
 clean:
-	rm -rf *.o kernel.bin kernel.iso
+	rm -rf obj kernel.bin kernel.iso

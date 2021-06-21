@@ -1,4 +1,6 @@
-#include "interrupts.h"
+#include <hardware/interrupts.h>
+
+using namespace citos::hardware;
 
 void printf(char*);
 void printfHex(uint8_t);

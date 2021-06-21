@@ -1,9 +1,14 @@
-#include "types.h"
-#include "gdt.h"
-#include "interrupts.h"
-#include "driver.h"
-#include "keyboard.h"
-#include "mouse.h"
+#include <common/types.h>
+#include <gdt.h>
+#include <hardware/interrupts.h>
+#include <drivers/driver.h>
+#include <drivers/keyboard.h>
+#include <drivers/mouse.h>
+
+using namespace citos;
+using namespace citos::common;
+using namespace citos::hardware;
+using namespace citos::drivers;
 
 typedef void (*constructor)();
 extern "C" constructor start_ctors;

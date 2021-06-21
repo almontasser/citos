@@ -1,4 +1,6 @@
-#include "mouse.h"
+#include <drivers/mouse.h>
+
+using namespace citos::drivers;
 
 void printf(char *);
 

@@ -1,4 +1,6 @@
-#include "keyboard.h"
+#include <drivers/keyboard.h>
+
+using namespace citos::drivers;
 
 void printf(char *);
 void printfHex(uint8_t);

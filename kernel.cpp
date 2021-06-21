@@ -84,6 +84,44 @@ public:
   }
 };
 
+class MouseToConsole : public MouseEventHandler
+{
+public:
+  int8_t x, y;
+
+  virtual void OnMouseActivate()
+  {
+    static uint16_t *video_memory = (uint16_t *)0xB8000;
+
+    x = 40;
+    y = 12;
+
+    video_memory[80 * 12 + 40] = ((video_memory[80 * 12 + 40] & 0xF000) >> 4) |
+                                 ((video_memory[80 * 12 + 40] & 0x0F00) << 4) |
+                                 (video_memory[80 * 12 + 40] & 0x00FF);
+  }
+
+  virtual void OnMouseMove(int xoffset, int yoffset)
+  {
+    static uint16_t *video_memory = (uint16_t *)0xB8000;
+
+    video_memory[80 * y + x] = ((video_memory[80 * y + x] & 0xF000) >> 4) |
+                               ((video_memory[80 * y + x] & 0x0F00) << 4) |
+                               (video_memory[80 * y + x] & 0x00FF);
+
+    x += xoffset;
+    if (x < 0) x = 0;
+    if (x >= 80) x = 79;
+    y += yoffset;
+    if (y < 0) y = 0;
+    if (y >= 25) y = 24;
+
+    video_memory[80 * y + x] = ((video_memory[80 * y + x] & 0xF000) >> 4) |
+                               ((video_memory[80 * y + x] & 0x0F00) << 4) |
+                               (video_memory[80 * y + x] & 0x00FF);
+  }
+};
+
 extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number)
 {
   clear_screen();
@@ -99,7 +137,8 @@ extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number
   KeyboardDriver keyboard(&interrupts, &keyboardHandler);
   driverManager.AddDriver(&keyboard);
 
-  MouseDriver mouse(&interrupts);
+  MouseToConsole mouseEventHandler;
+  MouseDriver mouse(&interrupts, &mouseEventHandler);
   driverManager.AddDriver(&mouse);
 
   printf("Initializin Hardware, Stage 2\n");

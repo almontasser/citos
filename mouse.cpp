@@ -2,9 +2,32 @@
 
 void printf(char *);
 
-MouseDriver::MouseDriver(InterruptManager *interruptManager)
+MouseEventHandler::MouseEventHandler()
+{
+}
+
+void MouseEventHandler::OnActivate()
+{
+}
+
+
+void MouseEventHandler::OnMouseDown(uint8_t button)
+{
+}
+
+void MouseEventHandler::OnMouseUp(uint8_t button)
+{
+}
+
+void MouseEventHandler::OnMouseMove(int xoffset, int yoffset)
+{
+}
+
+
+MouseDriver::MouseDriver(InterruptManager *interruptManager, MouseEventHandler* handler)
     : InterruptHandler(0x2C, interruptManager), dataport(0x60), commandport(0x64)
 {
+  this->handler = handler;
 }
 
 MouseDriver::~MouseDriver()
@@ -15,12 +38,6 @@ void MouseDriver::Activate()
 {
   offset = 0;
   buttons = 0;
-
-  uint16_t *video_memory = (uint16_t *)0xB8000;
-
-  video_memory[80 * 12 + 40] = ((video_memory[80 * 12 + 40] & 0xF000) >> 4) |
-                               ((video_memory[80 * 12 + 40] & 0x0F00) << 4) |
-                               (video_memory[80 * 12 + 40] & 0x00FF);
 
   commandport.Write(0xA8);              // activate interrupts
   commandport.Write(0x20);              // command 0x20 = read controller command byte
@@ -34,44 +51,33 @@ void MouseDriver::Activate()
 
 uint32_t MouseDriver::HandleInterrupt(uint32_t esp)
 {
-  static uint16_t *video_memory = (uint16_t *)0xB8000;
-
   // check if there is data to read
   uint8_t status = commandport.Read();
   if (!(status & 0x20))
     return esp;
 
-  static int8_t x = 40, y = 12;
-
   buffer[offset] = dataport.Read();
+
+  if (handler == 0)
+    return esp;
+
   offset = (offset + 1) % 3;
 
   if (offset == 0)
   {
-    video_memory[80 * y + x] = ((video_memory[80 * y + x] & 0xF000) >> 4) |
-                               ((video_memory[80 * y + x] & 0x0F00) << 4) |
-                               (video_memory[80 * y + x] & 0x00FF);
-
-    x += buffer[1];
-    if (x < 0) x = 0;
-    if (x >= 80) x = 79;
-    y -= buffer[2];
-    if (y < 0) y = 0;
-    if (y >= 25) y = 24;
-
-    video_memory[80 * y + x] = ((video_memory[80 * y + x] & 0xF000) >> 4) |
-                               ((video_memory[80 * y + x] & 0x0F00) << 4) |
-                               (video_memory[80 * y + x] & 0x00FF);
+    if (buffer[1] != 0 || buffer[2] != 0) {
+      handler->OnMouseMove(buffer[1], -buffer[2]);
+    }
   }
 
   for (uint8_t i = 0; i < 3; i++)
   {
     if ((buffer[0] & (1 << i)) != (buttons & (1 << i)))
     {
-      // button click
-      video_memory[80 * y + x] = ((video_memory[80 * y + x] & 0xF000) >> 4) |
-                                 ((video_memory[80 * y + x] & 0x0F00) << 4) |
-                                 (video_memory[80 * y + x] & 0x00FF);
+      if (buttons & (1 << i))
+        handler->OnMouseUp(i+1);
+      else
+        handler->OnMouseDown(i+1);
     }
   }
   buttons = buffer[0];

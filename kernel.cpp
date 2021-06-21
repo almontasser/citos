@@ -2,6 +2,7 @@
 #include "gdt.h"
 #include "interrupts.h"
 #include "keyboard.h"
+#include "mouse.h"
 
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
@@ -16,7 +17,7 @@ extern "C" void callConstructors()
 
 void clear_screen()
 {
-  uint16_t *video_memory = (uint16_t *)0xB8000;
+  static uint16_t *video_memory = (uint16_t *)0xB8000;
 
   for (int y = 0; y < 25; y++)
   {
@@ -30,7 +31,7 @@ void clear_screen()
 
 void printf(char *str)
 {
-  uint16_t *video_memory = (uint16_t *)0xB8000;
+  static uint16_t *video_memory = (uint16_t *)0xB8000;
 
   static uint8_t x = 0, y = 0;
 
@@ -71,6 +72,7 @@ extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number
   InterruptManager interrupts(&gdt);
 
   KeyboardDriver keyboard(&interrupts);
+  MouseDriver mouse(&interrupts);
 
   interrupts.Activate();
 

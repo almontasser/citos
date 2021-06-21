@@ -64,6 +64,26 @@ void printf(char *str)
   }
 }
 
+void printfHex(uint8_t byte)
+{
+  char *msg = "00";
+  char *hex = "0123456789ABCDEF";
+  msg[0] = hex[(byte >> 4) & 0x0F];
+  msg[1] = hex[byte & 0x0F];
+  printf(msg);
+}
+
+class PrintKeyboardEventHandler : public KeyboardEventHandler
+{
+public:
+  virtual void OnKeyDown(char key)
+  {
+    char* c = " ";
+    c[0] = key;
+    printf(c);
+  }
+};
+
 extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number)
 {
   clear_screen();
@@ -75,7 +95,8 @@ extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number
   printf("Initializin Hardware, Stage 1\n");
   DriverManager driverManager;
 
-  KeyboardDriver keyboard(&interrupts);
+  PrintKeyboardEventHandler keyboardHandler;
+  KeyboardDriver keyboard(&interrupts, &keyboardHandler);
   driverManager.AddDriver(&keyboard);
 
   MouseDriver mouse(&interrupts);

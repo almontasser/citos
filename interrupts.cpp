@@ -1,6 +1,7 @@
 #include "interrupts.h"
 
-void printf(char *str);
+void printf(char*);
+void printfHex(uint8_t);
 
 InterruptHandler::InterruptHandler(uint8_t interruptNumber,
                                    InterruptManager *interruptManager)
@@ -118,11 +119,8 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interrupt, uint32_t esp)
   }
   else if (interrupt != 0x20)
   {
-    char *msg = "UNHANDLED INTERRUPT 0x00 ";
-    char *hex = "0123456789ABCDEF";
-    msg[22] = hex[(interrupt >> 4) & 0x0F];
-    msg[23] = hex[interrupt & 0x0F];
-    printf(msg);
+    printf("UNHANDLED INTERRUPT 0x");
+    printfHex(interrupt);
   }
 
   if (0x20 <= interrupt && interrupt < 0x30)

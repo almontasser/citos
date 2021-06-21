@@ -5,6 +5,15 @@ void printf(char *);
 KeyboardDriver::KeyboardDriver(InterruptManager *interruptManager)
     : InterruptHandler(0x21, interruptManager), dataport(0x60), commandport(0x64)
 {
+
+}
+
+KeyboardDriver::~KeyboardDriver()
+{
+}
+
+void KeyboardDriver::Activate()
+{
   // When we start the driver, will remove old key strokes
   while (commandport.Read() & 0x1)
     dataport.Read();
@@ -14,10 +23,6 @@ KeyboardDriver::KeyboardDriver(InterruptManager *interruptManager)
   commandport.Write(0x60);                        // command 0x60 = set controller command byte
   dataport.Write(status);                         // set state
   dataport.Write(0xF4);                           // activate keyboard
-}
-
-KeyboardDriver::~KeyboardDriver()
-{
 }
 
 uint32_t KeyboardDriver::HandleInterrupt(uint32_t esp)

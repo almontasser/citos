@@ -1,6 +1,7 @@
 #include "types.h"
 #include "gdt.h"
 #include "interrupts.h"
+#include "driver.h"
 #include "keyboard.h"
 #include "mouse.h"
 
@@ -71,9 +72,19 @@ extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number
   GlobalDescriptorTable gdt;
   InterruptManager interrupts(&gdt);
 
-  KeyboardDriver keyboard(&interrupts);
-  MouseDriver mouse(&interrupts);
+  printf("Initializin Hardware, Stage 1\n");
+  DriverManager driverManager;
 
+  KeyboardDriver keyboard(&interrupts);
+  driverManager.AddDriver(&keyboard);
+
+  MouseDriver mouse(&interrupts);
+  driverManager.AddDriver(&mouse);
+
+  printf("Initializin Hardware, Stage 2\n");
+  driverManager.ActivateAll();
+
+  printf("Initializin Hardware, Stage 3\n");
   interrupts.Activate();
 
   while (1)

@@ -4,8 +4,9 @@
 #include "types.h"
 #include "interrupts.h"
 #include "port.h"
+#include "driver.h"
 
-class KeyboardDriver : public InterruptHandler
+class KeyboardDriver : public InterruptHandler, public Driver
 {
 protected:
   Port8Bit dataport;
@@ -14,6 +15,8 @@ protected:
 public:
   KeyboardDriver(InterruptManager *interruptManager);
   ~KeyboardDriver();
+
+  virtual void Activate();
 
   virtual uint32_t HandleInterrupt(uint32_t esp);
 };

@@ -5,6 +5,7 @@
 #include <drivers/driver.h>
 #include <drivers/keyboard.h>
 #include <drivers/mouse.h>
+#include <drivers/vga.h>
 
 using namespace citos;
 using namespace citos::common;
@@ -150,11 +151,20 @@ extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number
   PeripheralComponentInterconnectController PCIController;
   PCIController.SelectDrivers(&driverManager, &interrupts);
 
+  VideoGraphicsArray vga;
+
+
   printf("Initializin Hardware, Stage 2\n");
   driverManager.ActivateAll();
 
   printf("Initializin Hardware, Stage 3\n");
   interrupts.Activate();
+
+  vga.SetMode(320, 200, 8);
+  for (uint32_t y = 0; y < 200; y++)
+    for (uint32_t x = 0; x < 320; x++)
+      vga.PutPixel(x, y, 0x00, 0x00, 0xA8);
+
 
   while (1)
   {

@@ -8,6 +8,7 @@ objects = obj/loader.o \
 					obj/hardware/port.o \
 					obj/hardware/interruptstubs.o \
 					obj/hardware/interrupts.o \
+					obj/hardware/pci.o \
 					obj/drivers/keyboard.o \
 					obj/drivers/mouse.o \
 					obj/kernel.o
@@ -39,9 +40,9 @@ kernel.iso: kernel.bin
 	rm -rf iso
 
 run: kernel.iso
-	/mnt/d/Program\ Files/qemu/qemu-system-x86_64.exe -hda kernel.iso
-#	("/mnt/c/Program Files/Oracle/VirtualBox/VBoxManage.exe" controlvm "CITOS" poweroff && sleep 1) || true
-#	"/mnt/c/Program Files/Oracle/VirtualBox/VirtualBoxVM.exe" --startvm "CITOS" & 
+	# /mnt/d/Program\ Files/qemu/qemu-system-x86_64.exe -hda kernel.iso -net nic,model=ne2k_pci
+	("/mnt/c/Program Files/Oracle/VirtualBox/VBoxManage.exe" controlvm "CITOS" poweroff && sleep 1) || true
+	"/mnt/c/Program Files/Oracle/VirtualBox/VirtualBoxVM.exe" --startvm "CITOS" & 
 
 .PHONY: clean
 clean:

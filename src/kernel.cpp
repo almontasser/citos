@@ -1,6 +1,7 @@
 #include <common/types.h>
 #include <gdt.h>
 #include <hardware/interrupts.h>
+#include <hardware/pci.h>
 #include <drivers/driver.h>
 #include <drivers/keyboard.h>
 #include <drivers/mouse.h>
@@ -145,6 +146,9 @@ extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number
   MouseToConsole mouseEventHandler;
   MouseDriver mouse(&interrupts, &mouseEventHandler);
   driverManager.AddDriver(&mouse);
+
+  PeripheralComponentInterconnectController PCIController;
+  PCIController.SelectDrivers(&driverManager, &interrupts);
 
   printf("Initializin Hardware, Stage 2\n");
   driverManager.ActivateAll();

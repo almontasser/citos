@@ -39,6 +39,9 @@ void MouseDriver::Activate()
   offset = 0;
   buttons = 0;
 
+  if (handler != 0)
+    handler->OnActivate();
+
   commandport.Write(0xA8);              // activate interrupts
   commandport.Write(0x20);              // command 0x20 = read controller command byte
   uint8_t status = dataport.Read() | 2; // sets the second bit

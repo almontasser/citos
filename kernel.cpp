@@ -89,16 +89,16 @@ class MouseToConsole : public MouseEventHandler
 public:
   int8_t x, y;
 
-  virtual void OnMouseActivate()
+  virtual void OnActivate()
   {
     static uint16_t *video_memory = (uint16_t *)0xB8000;
 
     x = 40;
     y = 12;
 
-    video_memory[80 * 12 + 40] = ((video_memory[80 * 12 + 40] & 0xF000) >> 4) |
-                                 ((video_memory[80 * 12 + 40] & 0x0F00) << 4) |
-                                 (video_memory[80 * 12 + 40] & 0x00FF);
+    video_memory[80 * y + x] = ((video_memory[80 * y + x] & 0xF000) >> 4) |
+                                 ((video_memory[80 * y + x] & 0x0F00) << 4) |
+                                 (video_memory[80 * y + x] & 0x00FF);
   }
 
   virtual void OnMouseMove(int xoffset, int yoffset)

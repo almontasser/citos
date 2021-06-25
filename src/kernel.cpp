@@ -6,11 +6,16 @@
 #include <drivers/keyboard.h>
 #include <drivers/mouse.h>
 #include <drivers/vga.h>
+#include <gui/window.h>
+#include <gui/desktop.h>
 
 using namespace citos;
 using namespace citos::common;
 using namespace citos::hardware;
 using namespace citos::drivers;
+using namespace citos::gui;
+
+#define GRAPHICSMODE
 
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
@@ -138,20 +143,34 @@ extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number
   InterruptManager interrupts(&gdt);
 
   printf("Initializin Hardware, Stage 1\n");
+
+#ifdef GRAPHICSMODE
+  Desktop desktop(320,200, 0x00,0x00,0xA8);
+#endif
+
   DriverManager driverManager;
 
+#ifdef GRAPHICSMODE
+    KeyboardDriver keyboard(&interrupts, &desktop);
+#else
   PrintKeyboardEventHandler keyboardHandler;
   KeyboardDriver keyboard(&interrupts, &keyboardHandler);
+#endif
   driverManager.AddDriver(&keyboard);
 
+#ifdef GRAPHICSMODE
+  MouseDriver mouse(&interrupts, &desktop);
+#else
   MouseToConsole mouseEventHandler;
   MouseDriver mouse(&interrupts, &mouseEventHandler);
+#endif
   driverManager.AddDriver(&mouse);
 
   PeripheralComponentInterconnectController PCIController;
   PCIController.SelectDrivers(&driverManager, &interrupts);
-
+#ifdef GRAPHICSMODE
   VideoGraphicsArray vga;
+#endif
 
 
   printf("Initializin Hardware, Stage 2\n");
@@ -160,13 +179,22 @@ extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number
   printf("Initializin Hardware, Stage 3\n");
   interrupts.Activate();
 
+#ifdef GRAPHICSMODE
   vga.SetMode(320, 200, 8);
-  for (uint32_t y = 0; y < 200; y++)
-    for (uint32_t x = 0; x < 320; x++)
-      vga.PutPixel(x, y, 0x00, 0x00, 0xA8);
+#endif
 
+ #ifdef GRAPHICSMODE
+  vga.SetMode(320,200,8);
+  Window win1(&desktop, 10,10,20,20, 0xA8,0x00,0x00);
+  desktop.AddChild(&win1);
+  Window win2(&desktop, 40,15,30,30, 0x00,0xA8,0x00);
+  desktop.AddChild(&win2);
+#endif
 
   while (1)
   {
+    #ifdef GRAPHICSMODE
+      desktop.Draw(&vga);
+    #endif
   };
 }

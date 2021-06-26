@@ -97,6 +97,9 @@ bool VideoGraphicsArray::SetMode(uint32_t width, uint32_t height, uint32_t color
           0x41, 0x00, 0x0F, 0x00, 0x00};
 
   WriteRegisters(g_320x200x256);
+
+  DefineColors();
+
   return true;
 }
 
@@ -128,6 +131,18 @@ uint8_t VideoGraphicsArray::GetColorIndex(uint8_t r, uint8_t g, uint8_t b)
   if(r == 0xA8 && g == 0x00 && b == 0x00) return 0x04; // red
   if(r == 0xFF && g == 0xFF && b == 0xFF) return 0x3F; // white
   return 0x00;
+}
+
+void VideoGraphicsArray::DefineColors()
+{
+  Port8Bit command(0x03c8);
+  Port8BitSlow data(0x03c9);
+
+  command.Write(125);
+  
+  data.Write((72 * 63) / 255);
+  data.Write((61 * 63) / 255);
+  data.Write((139 * 63) / 255);
 }
 
 void VideoGraphicsArray::PutPixel(int32_t x, int32_t y, uint8_t r, uint8_t g, uint8_t b)

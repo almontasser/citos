@@ -16,7 +16,7 @@ using namespace citos::hardware;
 using namespace citos::drivers;
 using namespace citos::gui;
 
-#define GRAPHICSMODE
+// #define GRAPHICSMODE
 
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
@@ -189,6 +189,8 @@ extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number
  #ifdef GRAPHICSMODE
   vga.SetMode(320,200,8);
   Window win1(&desktop, 10,10,20,20, 0xA8,0x00,0x00);
+  Widget w(&win1, 4, 4, 4, 4, 0xFF, 0xFF, 0xFF);
+  win1.AddChild(&w);
   desktop.AddChild(&win1);
   Window win2(&desktop, 40,15,30,30, 0x00,0xA8,0x00);
   desktop.AddChild(&win2);

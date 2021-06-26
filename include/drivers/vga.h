@@ -33,6 +33,7 @@ namespace citos
 
       virtual uint8_t GetColorIndex(uint8_t r, uint8_t g, uint8_t b);
 
+      virtual void DefineColors();
     public:
       VideoGraphicsArray();
       ~VideoGraphicsArray(); 

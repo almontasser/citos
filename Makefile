@@ -2,6 +2,13 @@ GPP_PARAMS = -m32 -Iinclude -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti
 AS_PARAMS = --32
 LD_PARAMS = -melf_i386
 
+EMU = /mnt/d/Program\ Files/qemu/qemu-system-x86_64.exe
+
+# Configures two network devices on the same network
+EMU_ARGS = -net user
+EMU_ARGS += -netdev hubport,id=u1,hubid=0, -device e1000e,netdev=u1  -object filter-dump,id=f1,netdev=u1,file=qemu-e1000e.pcap
+EMU_ARGS += -netdev hubport,id=u2,hubid=0, -device e1000e,netdev=u2
+
 objects = obj/loader.o \
 					obj/gdt.o \
 					obj/drivers/driver.o \
@@ -45,7 +52,7 @@ kernel.iso: kernel.bin
 	rm -rf iso
 
 run: kernel.iso
-	/mnt/d/Program\ Files/qemu/qemu-system-x86_64.exe -hda kernel.iso -net nic,model=ne2k_pci
+	$(EMU)  -hda kernel.iso
 	# ("/mnt/c/Program Files/Oracle/VirtualBox/VBoxManage.exe" controlvm "CITOS" poweroff && sleep 1) || true
 	# "/mnt/c/Program Files/Oracle/VirtualBox/VirtualBoxVM.exe" --startvm "CITOS" & 
 

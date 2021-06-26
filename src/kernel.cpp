@@ -8,6 +8,7 @@
 #include <drivers/vga.h>
 #include <gui/window.h>
 #include <gui/desktop.h>
+#include <gui/render_frame.h>
 
 using namespace citos;
 using namespace citos::common;
@@ -170,6 +171,8 @@ extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number
   PCIController.SelectDrivers(&driverManager, &interrupts);
 #ifdef GRAPHICSMODE
   VideoGraphicsArray vga;
+  //initialize render frame
+  RenderFrame renderFrame(320,200); 
 #endif
 
 
@@ -194,7 +197,9 @@ extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number
   while (1)
   {
     #ifdef GRAPHICSMODE
-      desktop.Draw(&vga);
+      // desktop.Draw(&vga);
+      desktop.Draw(&renderFrame);
+      renderFrame.display(&vga);
     #endif
   };
 }

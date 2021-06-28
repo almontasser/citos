@@ -16,7 +16,7 @@ using namespace citos::hardware;
 using namespace citos::drivers;
 using namespace citos::gui;
 
-// #define GRAPHICSMODE
+#define GRAPHICSMODE
 
 typedef void (*constructor)();
 extern "C" constructor start_ctors;

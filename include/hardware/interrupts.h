@@ -2,6 +2,7 @@
 #define __CITOS_HARDWARE_INTERRUPTS_H
 
 #include <gdt.h>
+#include <multitasking.h>
 #include <common/types.h>
 #include <hardware/port.h>
 
@@ -36,6 +37,7 @@ namespace citos
     protected:
       static InterruptManager *ActiveInterruptManager;
       InterruptHandler *handlers[256];
+      TaskManager *taskManager;
 
       struct GateDescriptor
       {
@@ -67,7 +69,7 @@ namespace citos
       Port8BitSlow picSlaveData;
 
     public:
-      InterruptManager(GlobalDescriptorTable *gdt);
+      InterruptManager(GlobalDescriptorTable *gdt, TaskManager* taskManager);
       ~InterruptManager();
 
       void Activate();

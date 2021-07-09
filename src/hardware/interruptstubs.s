@@ -16,6 +16,7 @@ _ZN5citos8hardware16InterruptManager19HandleException\num\()Ev:
 .global _ZN5citos8hardware16InterruptManager26HandleInterruptRequest\num\()Ev
 _ZN5citos8hardware16InterruptManager26HandleInterruptRequest\num\()Ev:
   movb $\num + IRQ_BASE, (interruptnumber)
+  pushl $0
   jmp int_bottom
 .endm
 
@@ -26,11 +27,20 @@ HandleInterruptRequest 0x0C
 int_bottom:
   
   # store all registers and pointers
-  pusha
-  pushl %ds
-  pushl %es
-  pushl %fs
-  pushl %gs
+  #pusha
+  #pushl %ds
+  #pushl %es
+  #pushl %fs
+  #pushl %gs
+
+  pushl %ebp
+  pushl %edi
+  pushl %esi
+
+  pushl %edx
+  pushl %ecx
+  pushl %ebx
+  pushl %eax
 
   pushl %esp
   push (interruptnumber)
@@ -39,11 +49,21 @@ int_bottom:
   # restore esp to the result of the handleIntterupt method
   movl %eax, %esp
 
-  popl %gs
-  popl %fs
-  popl %es
-  popl %ds
-  popa
+  popl %eax
+  popl %ebx
+  popl %ecx
+  popl %edx
+
+  popl %esi
+  popl %edi
+  popl %ebp
+  #pop %gs
+  #pop %fs
+  #pop %es
+  #pop %ds
+  #popa
+
+  add $4, %esp
 
 _ZN5citos8hardware16InterruptManager22IgnoreInterruptRequestEv:
   # interrupt finished, return where you were

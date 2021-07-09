@@ -45,9 +45,10 @@ void InterruptManager::SetInterruptDescriptorTableEntry(
   interruptDescriptorTable[interruptNumber].reserved = 0;
 }
 
-InterruptManager::InterruptManager(GlobalDescriptorTable *gdt)
+InterruptManager::InterruptManager(GlobalDescriptorTable *gdt, TaskManager* taskManager)
     : picMasterCommand(0x20), picMasterData(0x21), picSlaveCommand(0xA0), picSlaveData(0xA1)
 {
+  this->taskManager = taskManager;
   uint16_t CodeSegment = gdt->CodeSegmentSelector();
   const uint8_t IDT_INTERRUPT_GATE = 0xE;
 
@@ -123,6 +124,11 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interrupt, uint32_t esp)
   {
     printf("UNHANDLED INTERRUPT 0x");
     printfHex(interrupt);
+  }
+
+  if (interrupt == 0x20)
+  {
+    esp = (uint32_t)taskManager->Schedule((CPUState*)esp);
   }
 
   if (0x20 <= interrupt && interrupt < 0x30)

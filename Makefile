@@ -15,6 +15,7 @@ objects = obj/loader.o \
 					obj/hardware/port.o \
 					obj/hardware/interruptstubs.o \
 					obj/hardware/interrupts.o \
+					obj/multitasking.o \
 					obj/hardware/pci.o \
 					obj/drivers/keyboard.o \
 					obj/drivers/mouse.o \
@@ -53,8 +54,8 @@ kernel.iso: kernel.bin
 
 run: kernel.iso
 	$(EMU)  -hda kernel.iso
-	# ("/mnt/c/Program Files/Oracle/VirtualBox/VBoxManage.exe" controlvm "CITOS" poweroff && sleep 1) || true
-	# "/mnt/c/Program Files/Oracle/VirtualBox/VirtualBoxVM.exe" --startvm "CITOS" & 
+# ("/mnt/c/Program Files/Oracle/VirtualBox/VBoxManage.exe" controlvm "CITOS" poweroff && sleep 1) || true
+# "/mnt/c/Program Files/Oracle/VirtualBox/VirtualBoxVM.exe" --startvm "CITOS" & 
 
 .PHONY: clean
 clean:

@@ -9,6 +9,7 @@
 #include <gui/window.h>
 #include <gui/desktop.h>
 #include <gui/render_frame.h>
+#include <multitasking.h>
 
 using namespace citos;
 using namespace citos::common;
@@ -16,7 +17,7 @@ using namespace citos::hardware;
 using namespace citos::drivers;
 using namespace citos::gui;
 
-#define GRAPHICSMODE
+// #define GRAPHICSMODE
 
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
@@ -31,7 +32,7 @@ extern "C" void callConstructors()
 
 void clear_screen()
 {
-  static uint16_t *video_memory = (uint16_t *)0xB8000;
+  uint16_t *video_memory = (uint16_t *)0xB8000;
 
   for (int y = 0; y < 25; y++)
   {
@@ -84,6 +85,17 @@ void printfHex(uint8_t byte)
   msg[0] = hex[(byte >> 4) & 0x0F];
   msg[1] = hex[byte & 0x0F];
   printf(msg);
+}
+
+void taskA()
+{
+    while(true)
+        printf("A");
+}
+void taskB()
+{
+    while(true)
+        printf("B");
 }
 
 class PrintKeyboardEventHandler : public KeyboardEventHandler
@@ -141,7 +153,14 @@ extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number
   printf("CIT Operating System\n");
 
   GlobalDescriptorTable gdt;
-  InterruptManager interrupts(&gdt);
+
+  TaskManager taskManager;
+  Task task1(&gdt, taskA);
+  Task task2(&gdt, taskB);
+  taskManager.AddTask(&task1);
+  taskManager.AddTask(&task2);
+
+  InterruptManager interrupts(&gdt, &taskManager);
 
   printf("Initializin Hardware, Stage 1\n");
 

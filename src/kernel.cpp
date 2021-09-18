@@ -201,10 +201,6 @@ extern "C" void kernel_main(void *multiboot_structure, unsigned int magic_number
   printf("Initializin Hardware, Stage 3\n");
   interrupts.Activate();
 
-#ifdef GRAPHICSMODE
-  vga.SetMode(320, 200, 8);
-#endif
-
  #ifdef GRAPHICSMODE
   vga.SetMode(320,200,8);
   Window win1(&desktop, 10,10,20,20, 0xA8,0x00,0x00);
